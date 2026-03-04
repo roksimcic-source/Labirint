@@ -1,0 +1,141 @@
+body {
+            background-color: #1a1a1a;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: sans-serif;
+        }
+
+        #game-container {
+            position: relative;
+            border: 4px solid #444;
+            background-color: white;
+            width: 600px;
+            height: 600px;
+            overflow: hidden;
+			background: black;
+        }
+
+        svg {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+		
+		
+
+        .controls {
+            margin-top: 20px;
+            text-align: center;
+            color: #aaa;
+        }
+
+        button {
+            margin: 15px;
+            padding: 10px 20px;
+            background-color: #2ed573;
+            border: none;
+            color: white;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        /* Popravek: Samo en ID za rešitev */
+        #actual-solution {
+            display: none;
+            stroke: #1e90ff;
+            stroke-width: 4;
+            fill: none;
+            opacity: 0.6;
+            pointer-events: none;
+        }
+		
+		
+		#player {
+			width: 12px; 
+			height: 12px;
+			position: absolute;
+			z-index: 10;
+			pointer-events: none;
+			background-color: transparent;
+		}
+
+		#player img {
+			width: 100%;
+			height: 100%;
+			display: block;
+			object-fit: contain; /* Keeps the ship size consistent */
+		}
+		.ui {
+		margin-top: 10px;
+		text-align: center;
+	}
+		
+		
+		
+		/* Star layers */
+
+		.stars, .stars2, .stars3 {
+			position: absolute;
+			width: 200%;
+			height: 200%;
+			top: -50%;
+			left: -50%;
+			background-repeat: repeat;
+			z-index: 0;
+		}
+
+		/* small stars */
+		.stars {
+			background-image:
+				radial-gradient(2px 2px at 20px 30px, white, transparent),
+				radial-gradient(2px 2px at 40px 70px, white, transparent),
+				radial-gradient(1px 1px at 90px 40px, white, transparent),
+				radial-gradient(1px 1px at 130px 80px, white, transparent),
+				radial-gradient(2px 2px at 160px 30px, white, transparent);
+			background-size: 200px 200px;
+			animation: moveStars 60s linear infinite;
+		}
+
+		/* medium stars */
+		.stars2 {
+			background-image:
+				radial-gradient(2px 2px at 50px 50px, #ddd, transparent),
+				radial-gradient(2px 2px at 100px 120px, #ddd, transparent),
+				radial-gradient(1px 1px at 160px 90px, #ddd, transparent);
+			background-size: 300px 300px;
+			animation: moveStars 120s linear infinite;
+		}
+
+		/* big stars */
+		.stars3 {
+			background-image:
+				radial-gradient(3px 3px at 100px 100px, #fff, transparent),
+				radial-gradient(2px 2px at 200px 200px, #fff, transparent);
+			background-size: 400px 400px;
+			animation: moveStars 200s linear infinite;
+		}
+
+		@keyframes moveStars {
+			from { transform: translateY(0); }
+			to { transform: translateY(-1000px); }
+		}
+		.stars, .stars2, .stars3 {
+			z-index: 0;
+			pointer-events: none;
+		}	
+		#maze-svg {
+			position: relative;
+			z-index: 1;
+		}
+
+		#player {
+			postion: absolute;
+			z-index: 2;
+		}
