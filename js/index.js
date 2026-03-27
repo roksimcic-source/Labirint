@@ -49,39 +49,7 @@ let keys = {};
 		
 		
 
-        function setupCollision() {
-			canvas.width = 484;
-			canvas.height = 484;
-			
-			// 1. Ustvarimo kopijo (klon) SVG-ja v pomnilniku
-			const svgElement = document.getElementById('maze-svg').cloneNode(true);
-			
-			
-			svgElement.querySelector('#actual-solution')?.remove();
-
-			
-			svgElement.querySelector('#walls')?.setAttribute('stroke', '#000');
-		
-			const solutionInClone = svgElement.querySelector('#actual-solution');
-			if (solutionInClone) {
-				solutionInClone.remove();
-			}
-
-			const svgData = new XMLSerializer().serializeToString(svgElement);
-			const img = new Image();
-			const svgBlob = new Blob([svgData], {type: 'image/svg+xml;charset=utf-8'});
-			const url = URL.createObjectURL(svgBlob);
-			
-			img.onload = function() {
-				collisionReady = true;
-				ctx.fillStyle = "white";
-				ctx.fillRect(0, 0, 484, 484);
-				ctx.drawImage(img, 0, 0);
-				URL.revokeObjectURL(url);
-				console.log("Collision map pripravljen (brez rešitve)!");
-			};
-			img.src = url;
-		}
+       
 
         function toggleSolution() {
             solutionPath.style.display = (solutionPath.style.display === "block") ? "none" : "block";
@@ -90,29 +58,67 @@ let keys = {};
        
 		
 		
+
+
+		function lineIntersectsRect(x1, y1, x2, y2, rx, ry, rw, rh) {
+		    // Check if a wall line segment intersects the player hitbox rectangle
+		    // First check if either endpoint is inside the rect
+		    function pointInRect(px, py) {
+		        return px >= rx && px <= rx + rw && py >= ry && py <= ry + rh;
+		    }
+		    if (pointInRect(x1, y1) || pointInRect(x2, y2)) return true;
+		
+		    // Check if rect corners straddle the line
+		    function side(px, py) {
+		        return (y2 - y1) * (px - x1) - (x2 - x1) * (py - y1);
+		    }
+		    const corners = [
+		        [rx, ry], [rx + rw, ry], [rx, ry + rh], [rx + rw, ry + rh]
+		    ];
+		    const sides = corners.map(([cx, cy]) => Math.sign(side(cx, cy)));
+		    if (sides.some(s => s !== sides[0])) {
+		        // Line infinite crosses rect — now check segment bounds
+		        const minX = Math.min(x1, x2), maxX = Math.max(x1, x2);
+		        const minY = Math.min(y1, y2), maxY = Math.max(y1, y2);
+		        if (maxX >= rx && minX <= rx + rw && maxY >= ry && minY <= ry + rh) return true;
+		    }
+		    return false;
+		}
+		
+		// Cache the wall lines once
+		let wallLines = null;
+		function getWallLines() {
+		    if (wallLines) return wallLines;
+		    wallLines = [];
+		    const lines = document.querySelectorAll('#walls line');
+		    lines.forEach(line => {
+		        wallLines.push({
+		            x1: parseFloat(line.getAttribute('x1')),
+		            y1: parseFloat(line.getAttribute('y1')),
+		            x2: parseFloat(line.getAttribute('x2')),
+		            y2: parseFloat(line.getAttribute('y2'))
+		        });
+		    });
+		    return wallLines;
+		}
+		
 		function canMoveTo(nx, ny) {
-			if (!collisionReady) return true;
-			const hitboxSize = 8;
-			const offset = 2;
-
-			for (let x = 0; x <= hitboxSize; x += 2) {
-				for (let y = 0; y <= hitboxSize; y += 2) {
-
-					const px = Math.floor(nx + offset + x);
-					const py = Math.floor(ny + offset + y);
-
-					if (px < 0 || px >= 484 || py < 0 || py >= 484) return false;
-
-					const pixel = ctx.getImageData(px, py, 1, 1).data;
-
-					// Check ALL channels to avoid anti-alias leaks
-					if (pixel[0] < 200 || pixel[1] < 200 || pixel[2] < 200) {
-						return false;
-					}
-				}
-			}
-
-			return true;
+		    const scale = 484 / 600; // SVG coords are 484, display is 600px
+		    // Convert player screen position to SVG coordinate space
+		    const sx = nx * scale;
+		    const sy = ny * scale;
+		    const sw = PLAYER_SIZE * scale;
+		    const sh = PLAYER_SIZE * scale;
+		
+		    // Boundary check
+		    if (sx < 0 || sy < 0 || sx + sw > 484 || sy + sh > 484) return false;
+		
+		    for (const {x1, y1, x2, y2} of getWallLines()) {
+		        if (lineIntersectsRect(x1, y1, x2, y2, sx, sy, sw, sh)) {
+		            return false;
+		        }
+		    }
+		    return true;
 		}
 
         function updatePosition() {
