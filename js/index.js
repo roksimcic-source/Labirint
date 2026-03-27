@@ -1,20 +1,15 @@
 let keys = {};
         const player = document.getElementById('player');
-        const canvas = document.getElementById('collision-canvas');
         const solutionPath = document.getElementById('actual-solution');
-        const ctx = canvas.getContext('2d');
 		const PLAYER_SIZE = 12; 
 		
-		let collisionReady = false;
-        let pX = 230; 
-        let pY = 5; 
+        let pX = 234; 
+        let pY = 3; 
         const speed = 1.5; 
         //const pSize = 6;  Malo manjši hitbox za lažje premikanje
-		const pSize = 4;
 		
 		
 		
-		const goal = document.getElementById('goal');
 		const timerDisplay = document.getElementById('timer');
 
 		let startTime = null;
