@@ -219,8 +219,8 @@ let keys = {};
 		
 		
 		function restartGame() {
-			pX = 232;
-			pY = 2;
+			pX = 234;
+			pY = 3;
 			gameWon = false;
 			gameStarted = false;
 			startTime = null;
