@@ -193,8 +193,9 @@ let keys = {};
 				updatePosition();
 
 			
-				const playerCenterX = pX + PLAYER_SIZE / 2;
-				const playerCenterY = pY + PLAYER_SIZE / 2;
+				const scale = 484 / 600;
+				const playerCenterX = (pX + PLAYER_SIZE / 2) * scale;
+				const playerCenterY = (pY + PLAYER_SIZE / 2) * scale;
 
 				const dxGoal = playerCenterX - GOAL_X;
 				const dyGoal = playerCenterY - GOAL_Y;
@@ -234,7 +235,6 @@ let keys = {};
 		}
 
         window.onload = () => {
-            setupCollision();
             updatePosition();
 			requestAnimationFrame(update);
         };
