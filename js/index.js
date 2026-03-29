@@ -49,7 +49,7 @@ let keys = {};
 		
 		
 
-        function setupCollision() {
+        /*function setupCollision() {
 			canvas.width = 484;
 			canvas.height = 484;
 			
@@ -81,7 +81,53 @@ let keys = {};
 				console.log("Collision map pripravljen (brez rešitve)!");
 			};
 			img.src = url;
+		}*/
+
+		function setupCollision() {
+		    canvas.width = 484;
+		    canvas.height = 484;
+		
+		    const originalSvg = document.getElementById('maze-svg');
+		    const svgElement = originalSvg.cloneNode(true);
+		
+		    const solution = svgElement.querySelector('#actual-solution');
+		    if (solution) solution.remove();
+		
+		    const walls = svgElement.querySelector('#walls');
+		    if (walls) walls.setAttribute('stroke', '#000');
+		
+		    svgElement.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+		    svgElement.setAttribute('width', '484');
+		    svgElement.setAttribute('height', '484');
+		    svgElement.setAttribute('viewBox', '0 0 484 484');
+		
+		    const svgData = new XMLSerializer().serializeToString(svgElement);
+		    const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+		    const url = URL.createObjectURL(svgBlob);
+		
+		    const img = new Image();
+		
+		    img.onload = function () {
+		        ctx.fillStyle = 'white';
+		        ctx.fillRect(0, 0, 484, 484);
+		        ctx.drawImage(img, 0, 0);
+		        collisionReady = true;
+		        URL.revokeObjectURL(url);
+		        console.log('Collision map ready');
+		    };
+		
+		    img.onerror = function (err) {
+		        console.error('Failed to build collision map', err);
+		        collisionReady = false;
+		        URL.revokeObjectURL(url);
+		    };
+		
+		    img.src = url;
 		}
+
+
+
+
 
         function toggleSolution() {
             solutionPath.style.display = (solutionPath.style.display === "block") ? "none" : "block";
@@ -91,7 +137,7 @@ let keys = {};
 		
 		
 		function canMoveTo(nx, ny) {
-			if (!collisionReady) return true;
+			if (!collisionReady) return false;
 			const hitboxSize = 8;
 			const offset = 2;
 
